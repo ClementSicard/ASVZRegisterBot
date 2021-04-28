@@ -13,7 +13,7 @@ FITNESS_CODE = 122920
 SPORTS_CODES = {
     "fitness": 122920,
 }
-LOACTIONS_CODES = {
+LOCATIONS_CODES = {
     "polyterasse": 45594,
     "honggerberg": 45598,
     "irchel": 45577
@@ -22,7 +22,9 @@ LOACTIONS_CODES = {
 BASE_URL = "https://schalter.asvz.ch/"
 
 
-def setupSelenium() -> driver:
+def setupSelenium():
+    user_agent = 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/60.0.3112.50 Safari/537.36'
+
     options = webdriver.ChromeOptions()
 
     # Ignore TLS certificate errors to prevent errors. No special requirement for security here
@@ -32,11 +34,12 @@ def setupSelenium() -> driver:
     options.add_argument('--incognito')
 
     # MOST IMPORTANT PARAMATER : enables the headless mode, namely no window is displayed and everything is ran in the background
-    # options.add_argument('--headless')
+    options.add_argument('--headless')
 
     # Forces the driver to be in English for compatability matters
     options.add_experimental_option(
         'prefs', {'intl.accept_languages': 'en,en_US'})
+    options.add_argument(f'user-agent={user_agent}')
 
     driver = webdriver.Chrome(options=options)
     return driver
@@ -66,7 +69,7 @@ def switchLogin(driver):
     sleep(1)
     x_path = "//div[@savedvalue=\"https://aai-logon.ethz.ch/idp/shibboleth\"]"
     driver.find_element_by_xpath(x_path).click()
-    sleep(0.2)
+    sleep(1)
 
     username_xpath = "//input[@name=\"j_username\"]"
     username_field = driver.find_element_by_xpath(username_xpath)
@@ -79,7 +82,7 @@ def switchLogin(driver):
     elem = driver.find_element_by_xpath("//button[@type=\"submit\"]")
 
     elem.click()
-    sleep(5)
+    sleep(2)
 
 
 def getTomorrowsDate():
@@ -89,9 +92,12 @@ def getTomorrowsDate():
 
 
 def getLecturesFiltered(driver, date, location, sport):
-    url = f"https://asvz.ch/426-sportfahrplan?f[0]=sport:{sport}&f[1]=facility:{location}&date={date}"
+    s = SPORTS_CODES[sport]
+    l = LOCATIONS_CODES[location]
+    url = f"https://asvz.ch/426-sportfahrplan?f[0]=sport:{s}&f[1]=facility:{l}&date={date}"
     try:
         driver.get(url)
+        sleep(2)
     except:
         exit("Could not access URL")
 
@@ -103,6 +109,7 @@ def getLecturePage(driver):
 
     freie_platze = True
     try:
+        sleep(2)
         driver.find_element_by_xpath(
             freie_platze_x_path).text[:5].lower() == "freie"
     except:
@@ -124,7 +131,7 @@ def registerToLecture(driver, url):
         "//*[@id=\"btnRegister\"]")
 
     try:
-        if "einschreiben" in einschreiben_button.text:
+        if "einschreiben" in einschreiben_button.text.lower():
             einschreiben_button.click()
             print("You were successfully registered!")
         else:
@@ -135,8 +142,10 @@ def registerToLecture(driver, url):
 
 def registerToASVZEvent(location, sport, hour):
     driver = setupSelenium()
+    print("Driver setup")
     driver.get(BASE_URL)
     switchLogin(driver)
+    print("Successfully logged in")
     tomorrow = getTomorrowsDate()
     lecture_date = tomorrow + "%20" + hour
     getLecturesFiltered(driver=driver, date=lecture_date,
@@ -154,9 +163,9 @@ def getArgs():
     parser.add_argument(
         "--sport", "-s", help="The sport you want to register to", choices=list(SPORTS_CODES.keys()))
     parser.add_argument(
-        "--hour", "-h", help="The hour you want to book to the next day. Must be of the form \"HH:MM\"")
+        "--hour", "-hr", help="The hour you want to book to the next day. Must be of the form \"HH:MM\"")
     parser.add_argument(
-        "--location", "-l", help="The location in which the lecture takes place", choices=list(LOACTIONS_CODES.keys()))
+        "--location", "-l", help="The location in which the lecture takes place", choices=list(LOCATIONS_CODES.keys()))
 
     return parser.parse_args()
 
