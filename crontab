@@ -1,0 +1,1 @@
+20 7 * * 0,2,4 python3 ~/Dev/Github/ASVZRegisterBot/main.py -hr "07:20" -s "fitness" -l "polyterasse"

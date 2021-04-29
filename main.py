@@ -5,18 +5,16 @@ from time import sleep
 from selenium import webdriver
 import argparse
 
-POLYTERASSE_CODE = 45594
-HONGG_CODE = 45598
-IRCHEL_CODE = 45577
-FITNESS_CODE = 122920
-
 SPORTS_CODES = {
     "fitness": 122920,
 }
 LOCATIONS_CODES = {
     "polyterasse": 45594,
     "honggerberg": 45598,
-    "irchel": 45577
+    "irchel": 45577,
+    "fluntern": 45575,
+    "winterthur": 45610,
+    "wadensvil": 45613
 }
 
 BASE_URL = "https://schalter.asvz.ch/"
