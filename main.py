@@ -31,9 +31,6 @@ def setupSelenium():
     # Sets up the browser to be in incognito mode
     options.add_argument('--incognito')
 
-    # MOST IMPORTANT PARAMATER : enables the headless mode, namely no window is displayed and everything is ran in the background
-    options.add_argument('--headless')
-
     # Forces the driver to be in English for compatability matters
     options.add_experimental_option(
         'prefs', {'intl.accept_languages': 'en,en_US'})
@@ -45,7 +42,7 @@ def setupSelenium():
 
 
 def getCredentials():
-    with open("creds.yaml") as creds_file:
+    with open("/home/pi/Dev/Github/ASVZRegisterBot/creds.yaml") as creds_file:
         creds = yaml.load(creds_file, Loader=yaml.FullLoader)
 
     username = creds["username"]
@@ -155,6 +152,7 @@ def registerToASVZEvent(location, sport, hour):
         registerToLecture(driver, url=lectureURL)
     except Exception as e:
         print(e)
+    driver.quit()
 
 
 def getArgs():
