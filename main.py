@@ -4,6 +4,7 @@ from bs4 import BeautifulSoup
 from time import sleep
 from selenium import webdriver
 import argparse
+from os import system
 
 SPORTS_CODES = {
     "fitness": 122920,
@@ -49,6 +50,14 @@ def getCredentials():
     password = creds["password"]
 
     return username, password
+
+
+def log(message: str):
+    now = datetime.now()
+    date_string = now.strftime("%d.%m.%Y %H:%M:%S")
+    system(
+        f'echo "[{date_string}] {message}" >> /home/pi/Dev/Github/ASVZRegisterBot/myjob.log')
+    print(message)
 
 
 def switchLogin(driver):
@@ -129,7 +138,7 @@ def registerToLecture(driver, url):
     try:
         if "einschreiben" in einschreiben_button.text.lower():
             einschreiben_button.click()
-            print("You were successfully registered!")
+            log("You were successfully registered!")
         else:
             raise Exception("You are already registered")
     except:
@@ -138,10 +147,10 @@ def registerToLecture(driver, url):
 
 def registerToASVZEvent(location, sport, hour):
     driver = setupSelenium()
-    print("Driver setup")
+    log("Driver setup")
     driver.get(BASE_URL)
     switchLogin(driver)
-    print("Successfully logged in")
+    log("Successfully logged in")
     tomorrow = getTomorrowsDate()
     lecture_date = tomorrow + "%20" + hour
     getLecturesFiltered(driver=driver, date=lecture_date,
@@ -151,7 +160,7 @@ def registerToASVZEvent(location, sport, hour):
         lectureURL = getLecturePage(driver)
         registerToLecture(driver, url=lectureURL)
     except Exception as e:
-        print(e)
+        log(e)
     driver.quit()
 
 
@@ -168,6 +177,13 @@ def getArgs():
 
 
 if __name__ == "__main__":
+    system("export DISPLAY=:0")
+
+    log("Bot started")
     args = getArgs()
+    log(f"Location: {args.location}")
+    log(f"Hour: {args.hour}")
+    log(f"Sport: {args.sport}\n")
+
     registerToASVZEvent(location=args.location,
                         hour=args.hour, sport=args.sport)
