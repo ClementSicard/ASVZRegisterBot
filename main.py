@@ -27,7 +27,6 @@ def setupSelenium():
 
     # Ignore TLS certificate errors to prevent errors. No special requirement for security here
     options.add_argument('--ignore-certificate-errors')
-    
 
     # Sets up the browser to be in incognito mode
     options.add_argument('--incognito')
@@ -40,7 +39,8 @@ def setupSelenium():
         'prefs', {'intl.accept_languages': 'en,en_US'})
     options.add_argument(f'user-agent={user_agent}')
 
-    driver = webdriver.Chrome('/usr/lib/chromium-browser/chromedriver', options=options)
+    driver = webdriver.Chrome(
+        '/usr/lib/chromium-browser/chromedriver', options=options)
     return driver
 
 
