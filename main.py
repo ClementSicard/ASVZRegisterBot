@@ -22,24 +22,28 @@ BASE_URL = "https://schalter.asvz.ch/"
 
 
 def setupSelenium():
-    user_agent = 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/60.0.3112.50 Safari/537.36'
+    try:
+        user_agent = 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/60.0.3112.50 Safari/537.36'
 
-    options = webdriver.ChromeOptions()
+        options = webdriver.ChromeOptions()
 
-    # Ignore TLS certificate errors to prevent errors. No special requirement for security here
-    options.add_argument('--ignore-certificate-errors')
+        # Ignore TLS certificate errors to prevent errors. No special requirement for security here
+        options.add_argument('--ignore-certificate-errors')
 
-    # Sets up the browser to be in incognito mode
-    options.add_argument('--incognito')
+        # Sets up the browser to be in incognito mode
+        options.add_argument('--incognito')
 
-    # Forces the driver to be in English for compatability matters
-    options.add_experimental_option(
-        'prefs', {'intl.accept_languages': 'en,en_US'})
-    options.add_argument(f'user-agent={user_agent}')
+        # Forces the driver to be in English for compatability matters
+        options.add_experimental_option(
+            'prefs', {'intl.accept_languages': 'en,en_US'})
+        options.add_argument(f'user-agent={user_agent}')
 
-    driver = webdriver.Chrome(
-        '/usr/lib/chromium-browser/chromedriver', options=options)
-    return driver
+        driver = webdriver.Chrome(
+            '/usr/lib/chromium-browser/chromedriver', options=options)
+        return driver
+    except Exception as e:
+        log(e)
+        exit()
 
 
 def getCredentials():
@@ -121,8 +125,9 @@ def getLecturePage(driver):
         freie_platze = False
 
     if not freie_platze:
-        raise Exception(
+        log(
             "You cannot register for now (either too early, too late or no more places.")
+        exit()
     else:
         lecture_url = driver.find_element_by_xpath(
             lecture_x_path).get_attribute("href")
@@ -142,9 +147,9 @@ def registerToLecture(driver, url):
             einschreiben_button.click()
             log("You were successfully registered!")
         else:
-            raise Exception("You are already registered")
+            log("You are already registered")
     except:
-        raise Exception("Oops... Couldn't find registration button")
+        log("Oops... Couldn't find registration button")
 
 
 def registerToASVZEvent(location, sport, hour):
@@ -162,6 +167,8 @@ def registerToASVZEvent(location, sport, hour):
         registerToLecture(driver, url=lectureURL)
     except Exception as e:
         log(e)
+        driver.quit()
+        exit()
     driver.quit()
 
 
