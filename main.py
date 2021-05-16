@@ -148,17 +148,16 @@ def registerToLecture(driver, url):
 
 
 def registerToASVZEvent(location, sport, hour):
-    driver = setupSelenium()
-    log("Driver setup")
-    driver.get(BASE_URL)
-    switchLogin(driver)
-    log("Successfully logged in")
-    tomorrow = getTomorrowsDate()
-    lecture_date = tomorrow + "%20" + hour
-    getLecturesFiltered(driver=driver, date=lecture_date,
-                        location=location, sport=sport)
-
     try:
+        driver = setupSelenium()
+        log("Driver setup")
+        driver.get(BASE_URL)
+        switchLogin(driver)
+        log("Successfully logged in")
+        tomorrow = getTomorrowsDate()
+        lecture_date = tomorrow + "%20" + hour
+        getLecturesFiltered(driver=driver, date=lecture_date,
+                            location=location, sport=sport)
         lectureURL = getLecturePage(driver)
         registerToLecture(driver, url=lectureURL)
     except Exception as e:
