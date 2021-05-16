@@ -5,6 +5,7 @@ from time import sleep
 from selenium import webdriver
 import argparse
 from os import system
+import smtplib
 
 SPORTS_CODES = {
     "fitness": 122920,
@@ -19,6 +20,8 @@ LOCATIONS_CODES = {
 }
 
 BASE_URL = "https://schalter.asvz.ch/"
+
+LOG = """"""
 
 
 def setupSelenium():
@@ -56,9 +59,21 @@ def getCredentials():
     return username, password
 
 
+def getMailCredentials():
+    with open("/home/pi/Dev/Github/ASVZRegisterBot/creds.yaml") as creds_file:
+        creds = yaml.load(creds_file, Loader=yaml.FullLoader)
+
+    mail = creds["gmail"]
+    password = creds["gmailpwd"]
+    user_mail = creds["username"]
+
+    return mail, password, user_mail
+
+
 def log(message: str):
     now = datetime.now()
     date_string = now.strftime("%d.%m.%Y %H:%M:%S")
+    LOG = LOG + f"\n[{date_string}] {message}"
     system(
         f'echo "[{date_string}] {message}" >> /home/pi/Dev/Github/ASVZRegisterBot/myjob.log')
     print(message)
@@ -152,7 +167,7 @@ def registerToLecture(driver, url):
         log("Oops... Couldn't find registration button")
 
 
-def registerToASVZEvent(location, sport, hour):
+def registerToASVZEvent(location: str, sport: str, hour: str):
     try:
         driver = setupSelenium()
         log("Driver setup")
@@ -170,6 +185,17 @@ def registerToASVZEvent(location, sport, hour):
         driver.quit()
         exit()
     driver.quit()
+
+
+def sendEmail(user_mail: str, mail: str, password: str, port: int = 465):
+    with smtplib.SMTP_SSL("smtp.gmail.com", port) as server:
+        server.login(mail, password)
+        server.sendmail(
+            mail,
+            f"{user_mail}@student.ethz.ch",
+            LOG
+        )
+        server.quit()
 
 
 def getArgs():
@@ -193,5 +219,9 @@ if __name__ == "__main__":
     try:
         registerToASVZEvent(location=args.location,
                             hour=args.hour, sport=args.sport)
+
+        mail, password, user_mail = getMailCredentials()
+        sendEmail(user_mail=user_mail, mail=mail, password=password)
+
     except Exception as e:
         log(e)
