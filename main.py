@@ -184,6 +184,8 @@ if __name__ == "__main__":
     log(f"Location: {args.location}")
     log(f"Hour: {args.hour}")
     log(f"Sport: {args.sport}\n")
-
-    registerToASVZEvent(location=args.location,
-                        hour=args.hour, sport=args.sport)
+    try:
+        registerToASVZEvent(location=args.location,
+                            hour=args.hour, sport=args.sport)
+    except Exception as e:
+        log(e)
