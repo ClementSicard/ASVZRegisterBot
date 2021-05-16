@@ -1,1 +1,1 @@
-20 7 * * 0,2,4 python3 ~/Dev/Github/ASVZRegisterBot/main.py -hr "07:20" -s "fitness" -l "polyterasse"
+20 7 * * 0,2,4 export DISPLAY =:0 && python3 ~/Dev/Github/ASVZRegisterBot/main.py -hr "07:20" -s "fitness" -l "polyterasse"
