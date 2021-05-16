@@ -131,6 +131,8 @@ def getLecturePage(driver):
 
 def registerToLecture(driver, url):
     driver.get(url)
+    sleep(1)
+    driver.get(url)
     sleep(4)
     einschreiben_button = driver.find_element_by_xpath(
         "//*[@id=\"btnRegister\"]")
