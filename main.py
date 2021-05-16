@@ -179,8 +179,6 @@ def getArgs():
 
 
 if __name__ == "__main__":
-    system("export DISPLAY=:0")
-
     log("Bot started")
     args = getArgs()
     log(f"Location: {args.location}")
