@@ -50,7 +50,7 @@ def setupSelenium():
 
 
 def getCredentials():
-    with open("/home/pi/Dev/Github/ASVZRegisterBot/creds.yaml") as creds_file:
+    with open("creds.yaml") as creds_file:
         creds = yaml.load(creds_file, Loader=yaml.FullLoader)
 
     username = creds["username"]
@@ -60,7 +60,7 @@ def getCredentials():
 
 
 def getMailCredentials():
-    with open("/home/pi/Dev/Github/ASVZRegisterBot/creds.yaml") as creds_file:
+    with open("creds.yaml") as creds_file:
         creds = yaml.load(creds_file, Loader=yaml.FullLoader)
 
     mail = creds["gmail"]
@@ -75,7 +75,7 @@ def log(message: str):
     date_string = now.strftime("%d.%m.%Y %H:%M:%S")
     LOG = LOG + f"\n[{date_string}] {message}"
     system(
-        f'echo "[{date_string}] {message}" >> /home/pi/Dev/Github/ASVZRegisterBot/myjob.log')
+        f'echo "[{date_string}] {message}" >> myjob.log')
     print(message)
 
 
@@ -211,6 +211,7 @@ def getArgs():
 
 
 if __name__ == "__main__":
+
     log("Bot started")
     args = getArgs()
     log(f"Location: {args.location}")
